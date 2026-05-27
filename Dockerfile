@@ -1,8 +1,8 @@
 # --- STAGE 1: Build & Setup ---
 FROM nginx:alpine
 
-# Copy your specific HTML file into Nginx's public directory as index.html
-COPY seedhe_sawal_tedhe_javab.html /usr/share/nginx/html/index.html
+# Copy index.html from your repository root into Nginx's public directory
+COPY index.html /usr/share/nginx/html/index.html
 
 # Configure Nginx to listen on Cloud Run's expected port (8080)
 RUN echo "server { \
