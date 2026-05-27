@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seedhe Sawal, Tedhe Javab! 😜</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Baloo+2:wght@400..800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Baloo 2', 'Fredoka', sans-serif;
+            background: radial-gradient(circle at double, #ffedd5 0%, #ffedd5 40%, #ffcf96 100%);
+            min-height: 100vh;
+        }
+        
+        .funny-title {
+            font-family: 'Fredoka', sans-serif;
+            text-shadow: 3px 3px 0px #000;
+        }
+
+        .handwritten {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Card Shaking Animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .shake-element {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Floating background blobs */
+        .blob {
+            position: absolute;
+            background-color: rgba(251, 146, 60, 0.2);
+            border-radius: 50%;
+            filter: blur(40px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Confetti Styling */
+        .confetti-particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            pointer-events: none;
+            opacity: 1;
+            z-index: 99;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(600px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Customized scrollbars for list items */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(254, 215, 170, 0.5);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border-radius: 4px;
+        }
+
+        /* Fun Indian Truck Art Border effect */
+        .truck-border {
+            border: 8px solid #f97316;
+            outline: 4px dashed #facc15;
+            outline-offset: -12px;
+        }
+    </style>
+</head>
+<body class="relative overflow-x-hidden py-10 px-4">
+
+    <!-- Ambient Blobs -->
+    <div class="blob w-72 h-72 top-10 left-10"></div>
+    <div class="blob w-96 h-96 bottom-10 right-10 bg-yellow-300/20"></div>
+
+    <!-- Container -->
+    <div class="max-w-4xl mx-auto relative z-10">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <span class="inline-block bg-orange-600 text-white font-bold px-4 py-1.5 rounded-full text-sm uppercase tracking-wider shadow-md border-2 border-white mb-2 rotate-1">
+                🔥 Mast, Funky & Tedha Jawab Game!
+            </span>
+            <h1 class="funny-title text-4xl md:text-6xl text-orange-600 font-extrabold uppercase select-none tracking-tight">
+                Seedhe Sawal <br class="md:hidden"> <span class="text-yellow-500 underline decoration-black decoration-wavy">Tedhe Jawab!</span> 😜
+            </h1>
+            <p class="text-slate-700 text-lg md:text-xl font-medium mt-3">
+                Kiya aapka dimaag "Tedha" soch sakta hai? Apne dimag ki dahi karein aur 50 mazedar sawalon ke tedhe jawab khojein!
+            </p>
+            
+            <!-- Quick Sound Toggle -->
+            <div class="mt-4 flex justify-center gap-4">
+                <button onclick="toggleSound()" id="soundBtn" class="bg-white/80 hover:bg-white text-slate-700 font-bold px-4 py-2 rounded-full border-2 border-slate-700 text-sm shadow transition duration-200">
+                    <i class="fa-solid fa-volume-high mr-1"></i> Sound: ON
+                </button>
+                <button onclick="triggerRandomQuestion()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-extrabold px-5 py-2 rounded-full border-2 border-slate-900 text-sm shadow-md transition duration-200 transform hover:scale-105">
+                    <i class="fa-solid fa-shuffle mr-1"></i> Random Sawal!
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <div class="bg-white/90 border-2 border-slate-800 rounded-2xl p-3 text-center shadow-md">
+                <p class="text-xs text-slate-500 font-bold uppercase">Sawal Number</p>
+                <p id="statNumber" class="text-xl md:text-2xl font-black text-orange-600">1 / 50</p>
+            </div>
+            <div class="bg-white/90 border-2 border-slate-800 rounded-2xl p-3 text-center shadow-md">
+                <p class="text-xs text-slate-500 font-bold uppercase">Aapke Sahi Jawab</p>
+                <p id="statSolved" class="text-xl md:text-2xl font-black text-emerald-600">0</p>
+            </div>
+            <div class="bg-white/90 border-2 border-slate-800 rounded-2xl p-3 text-center shadow-md">
+                <p class="text-xs text-slate-500 font-bold uppercase">Unlocked Jawab</p>
+                <p id="statUnlocked" class="text-xl md:text-2xl font-black text-blue-600">0</p>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Active Question Box (Left/Main) -->
+            <div id="gameCard" class="lg:col-span-8 bg-white border-4 border-slate-900 shadow-[8px_8px_0px_#0f172a] rounded-3xl p-6 md:p-8 relative overflow-hidden transition-all duration-300">
+                <!-- Decorative Top Tab -->
+                <div class="absolute top-0 right-10 bg-yellow-400 border-x-2 border-b-2 border-slate-900 px-4 py-1 text-xs font-black uppercase text-slate-900 tracking-wider">
+                    Dimaag Lagao!
+                </div>
+                
+                <!-- Category tag -->
+                <span id="qCategory" class="inline-block bg-purple-100 text-purple-800 border border-purple-300 font-bold text-xs px-3 py-1 rounded-full uppercase mb-4">
+                    Brain Teaser 🧠
+                </span>
+
+                <!-- Question -->
+                <div class="mb-6">
+                    <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Sawal:</p>
+                    <h2 id="qText" class="text-2xl md:text-3.5xl font-extrabold text-slate-800 leading-tight">
+                        Kya khane se akal aati hai? 🤔
+                    </h2>
+                </div>
+
+                <!-- Input Zone -->
+                <div class="mb-6">
+                    <label for="userAns" class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">Aapka Tedha Jawab Likhein (Hinglish/Hindi):</label>
+                    <div class="relative">
+                        <input type="text" id="userAns" placeholder="Apna crazy dimag lagayein..." 
+                               class="w-full bg-slate-50 border-3 border-slate-900 rounded-2xl py-4 px-5 text-lg font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition duration-150">
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <span class="handwritten text-xl font-bold text-orange-500 hidden md:inline">Hinglish works!</span>
+                        </div>
+                    </div>
+                    <p id="helperClue" class="text-sm text-slate-500 mt-2 italic">
+                        💡 <strong>Hint:</strong> Badam khane se to bilkul nahi aati!
+                    </p>
+                </div>
+
+                <!-- Interactive Buttons -->
+                <div class="flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex gap-2">
+                        <!-- Submit -->
+                        <button onclick="checkUserAnswer()" class="bg-orange-500 hover:bg-orange-600 active:translate-y-0.5 text-white font-black text-lg px-6 py-3.5 rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:shadow-[2px_2px_0px_#0f172a] transition-all duration-150">
+                            Check Karein! 🚀
+                        </button>
+                        <!-- Reveal / Jawab Dekho -->
+                        <button onclick="revealAnswerDirectly()" class="bg-blue-400 hover:bg-blue-500 active:translate-y-0.5 text-slate-900 font-extrabold text-lg px-6 py-3.5 rounded-2xl border-3 border-slate-900 shadow-[4px_4px_0px_#0f172a] hover:shadow-[2px_2px_0px_#0f172a] transition-all duration-150">
+                            Jawab Dekho! 👀
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Feedback / Reveals Box (Initially Hidden) -->
+                <div id="feedbackBox" class="mt-6 border-3 border-slate-900 rounded-2xl p-5 hidden transform transition-all duration-200">
+                    <div class="flex items-start gap-4">
+                        <div id="feedbackEmoji" class="text-4xl">🎉</div>
+                        <div>
+                            <h4 id="feedbackTitle" class="text-xl font-black text-slate-800">Bilkul Sahi Pakde Hain!</h4>
+                            <p id="feedbackText" class="text-slate-600 mt-1 font-medium text-md">Kuch mast feedback...</p>
+                            
+                            <!-- Detailed Witty Answer Section -->
+                            <div class="mt-4 bg-yellow-50 border-2 border-dashed border-yellow-400 p-3 rounded-xl">
+                                <p class="text-xs font-bold text-yellow-700 uppercase">Actual Tedha Jawab:</p>
+                                <p id="actualAnswer" class="text-xl font-black text-slate-800">Thokar ya Dhokha!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prev & Next Controls -->
+                <div class="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+                    <button onclick="prevQuestion()" class="text-slate-500 hover:text-slate-900 font-bold flex items-center gap-2 text-sm md:text-base">
+                        <i class="fa-solid fa-arrow-left"></i> Pichla Sawal
+                    </button>
+                    <span class="text-slate-400 font-bold text-sm">Sawal <span id="currentPagination">1</span> of 50</span>
+                    <button onclick="nextQuestion()" class="text-orange-500 hover:text-orange-600 font-bold flex items-center gap-2 text-sm md:text-base">
+                        Agla Sawal <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Filter & List View (Right Sidebar) -->
+            <div class="lg:col-span-4 bg-slate-900 text-white border-4 border-slate-900 shadow-[8px_8px_0px_#ffbf00] rounded-3xl p-5">
+                <h3 class="text-xl font-black uppercase tracking-wider mb-3 text-yellow-400">
+                    📋 Sawaal List (50 total)
+                </h3>
+                <p class="text-slate-400 text-xs mb-4">Direct click karke kisi bhi sawal par jump karein:</p>
+                
+                <!-- Category Filter Pills -->
+                <div class="flex flex-wrap gap-1.5 mb-4">
+                    <button onclick="filterQuestions('all')" class="category-filter bg-yellow-400 text-slate-900 font-black text-xs px-2.5 py-1 rounded-full">All</button>
+                    <button onclick="filterQuestions('funny')" class="category-filter bg-slate-800 text-slate-300 font-bold text-xs px-2.5 py-1 rounded-full hover:bg-slate-700">Mazedaar</button>
+                    <button onclick="filterQuestions('mind')" class="category-filter bg-slate-800 text-slate-300 font-bold text-xs px-2.5 py-1 rounded-full hover:bg-slate-700">Dimagi</button>
+                    <button onclick="filterQuestions('riddle')" class="category-filter bg-slate-800 text-slate-300 font-bold text-xs px-2.5 py-1 rounded-full hover:bg-slate-700">Paheliyan</button>
+                </div>
+
+                <!-- Scrollable List -->
+                <div id="questionsScrollList" class="custom-scroll space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                    <!-- Dynamic Loading -->
+                </div>
+            </div>
+            
+        </main>
+
+        <!-- Fun Box: Share customized quote / creation -->
+        <section class="mt-8 bg-amber-100 border-3 border-slate-900 rounded-3xl p-6 relative">
+            <h3 class="text-2xl font-black text-slate-800 mb-2">Truck Art Shashi Gyaan 🚚</h3>
+            <p id="truckQuote" class="text-slate-700 italic font-semibold text-lg">
+                "Buri nazar wale tera muh kala, dimaag khali karne wale tera bolbala!"
+            </p>
+            <div class="mt-4 flex flex-wrap gap-3">
+                <button onclick="changeQuote()" class="bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-sm px-4 py-2 rounded-full border-2 border-slate-900 shadow-sm">
+                    💡 Doosra Gyaan Sunao!
+                </button>
+                <button onclick="shareGame()" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm px-4 py-2 rounded-full border-2 border-slate-900 shadow-sm">
+                    💬 Dosto ko bhejein
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-slate-500 text-sm mt-12">
+            <p>Made with 💖, Tedha Dimaag, aur 100% Desi Hinglish.</p>
+            <p class="mt-1 font-bold">No data was harmed in making this cost-free dimaag simulator.</p>
+        </footer>
+    </div>
+
+    <!-- AUDIO SYNTHESIS & LOGIC SCRIPTS -->
+    <script>
+        // --- SOUND EFFECTS (Web Audio API Synthesizer) ---
+        let audioEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSynthSound(type) {
+            if (!audioEnabled) return;
+            // Ensure audio context is running
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'success') {
+                // Happy high-pitched arpeggio (Tada!)
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                
+                osc.start(now);
+                osc.stop(now + 0.6);
+            } 
+            else if (type === 'fail') {
+                // Sad slide down (Boring / Normal answer)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now); // A3
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.5);
+                
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } 
+            else if (type === 'boing') {
+                // Springy comic bounce sound
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(450, now + 0.35);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+        }
+
+        function toggleSound() {
+            audioEnabled = !audioEnabled;
+            const btn = document.getElementById('soundBtn');
+            if (audioEnabled) {
+                btn.innerHTML = `<i class="fa-solid fa-volume-high mr-1"></i> Sound: ON`;
+                btn.classList.replace('bg-slate-200', 'bg-white/80');
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-volume-xmark mr-1"></i> Sound: OFF`;
+                btn.classList.add('bg-slate-200');
+            }
+            playSynthSound('boing');
+        }
+
+        // --- THE MASSIVE 50 QUESTION DATASET ---
+        const qaData = [
+            { id: 1, category: "mind", title: "Akal Mandi", question: "Kya khane se akal aati hai? 🤔", answer: "Thokar ya Dhokha", clue: "Badam khane se sirf pet bharta hai, ye log muft me de jaate hain!", keywords: ["thokar", "dhoka", "dhokha", "galti", "experience", "experience se"] },
+            { id: 2, category: "funny", title: "Murgi Special", question: "Kaun si murgi ka anda sabse mehenga hota hai? 🥚", answer: "Sone ki murgi ka anda!", clue: "Ye kahaniyon mein milti hai aur ameer banati hai.", keywords: ["sone ki", "sone", "gold", "golden", "sone wali"] },
+            { id: 3, category: "riddle", title: "Dry Fruits", question: "Kaun si rassi hai jisse hum kapde nahi sukhaye ja sakte? 🍬", answer: "Jalebi! (Wo bhi ras ki rassi hai)", clue: "Ye behad swadist aur gol-gol hoti hai.", keywords: ["jalebi", "jaleby", "mithai"] },
+            { id: 4, category: "funny", title: "Colgate Gate", question: "Aisa kaun sa gate hai jismein se koi nikal nahi sakta? 🚪", answer: "Colgate!", clue: "Subah subah danto par lagate ho yaar.", keywords: ["colgate", "col-gate", "toothpaste", "brush"] },
+            { id: 5, category: "funny", title: "Drivers", question: "Aisa kaun sa driver hai jise license ki zaroorat nahi hoti? ⚙️", answer: "Screwdriver!", clue: "Ye gaadi nahi, pech ghumata hai.", keywords: ["screwdriver", "screw-driver", "pechkash", "pech"] },
+            { id: 6, category: "mind", title: "Sabr", question: "Kaun sa phal meetha hone ke baajood baazar mein nahi bikta? 🍎", answer: "Sabr ka phal!", clue: "Har koi kehta hai ise rakho par dukan par nahi milega.", keywords: ["sabr", "sabar", "patience", "sabr ka phal"] },
+            { id: 7, category: "funny", title: "Shaving", question: "Wo kaun sa dukaandar hai jo hamara maal bhi leta hai aur daam bhi? 💇", answer: "Naai (Barber)!", clue: "Aapke baal kaat kar aapse hi paise leta hai.", keywords: ["naai", "barber", "hair dresser", "nai", "haircutter"] },
+            { id: 8, category: "riddle", title: "Water Chemistry", question: "Aisi kaun si cheez hai jo dhone ke baad gandi ho jati hai? 💧", answer: "Paani (Water)!", clue: "Iska swayam ka koi dhabba nahi hota lekin saaf karte hi ganda ho jata hai.", keywords: ["paani", "pani", "water"] },
+            { id: 9, category: "funny", title: "Naughty Cat", question: "Ek billi ke teen bachhe thhe - Jan, Feb aur March. Billi ka naam kya thha? 🐱", answer: "Billi ka naam 'Kya' thha!", clue: "Sawal ko dhyan se padho, answer usi me chhupa hai.", keywords: ["kya", "what", "kya tha"] },
+            { id: 10, category: "mind", title: "Baraat Magic", question: "Aisi kaun si jagah hai jahan 100 log jate hain toh 101 log wapas aate hain? 💒", answer: "Baraat (Dulhan ke saath)!", clue: "Shaadi ke dhol-tashon se juda hai ye.", keywords: ["baraat", "barat", "shadi", "wedding", "dulhan"] },
+            { id: 11, category: "riddle", title: "Sweet Town", question: "Aisa kaun sa sheher hai jise hum kha sakte hain? 🏙️", answer: "Shimla Mirch / Kanpur (Kaan-pur)!", clue: "Ye ek sabzi ka naam bhi hai.", keywords: ["shimla mirch", "shimla", "capsicum", "kanpur", "indore"] },
+            { id: 12, category: "funny", title: "Dreadful Powder", question: "Aisa kaun sa darr hai jo aapko sundar dikhne mein madad karta hai? 💄", answer: "Powder (Pow-darr)!", clue: "Gore mukhde par lagane wala darr.", keywords: ["powder", "pow-der", "pow-darr", "face powder", "makeup"] },
+            { id: 13, category: "funny", title: "Hot Doggy", question: "Kaun sa kutta kabhi nahi kaat-ta? 🌭", answer: "Hot Dog!", clue: "Ye bread aur sausage ke saath khaya jata hai.", keywords: ["hot dog", "hotdog", "eating dog"] },
+            { id: 14, category: "riddle", title: "Silent Object", question: "Wo kya hai jo sirf bolne se hi toot jata hai? 🤫", answer: "Khamoshi (Silence)!", clue: "Shh... shor mat machao.", keywords: ["khamoshi", "silence", "shanti", "sannata"] },
+            { id: 15, category: "funny", title: "Keyless Keyboard", question: "Wo kya hai jiske paas dher saari chabiyan hain par ek bhi tala nahi khulta? 🎹", answer: "Piano ya Keyboard!", clue: "Ye sur aur sangeet banata hai.", keywords: ["piano", "keyboard", "musical keyboard", "harmonium"] },
+            { id: 16, category: "mind", title: "Sinking Ship", question: "Ek haathi swimming pool mein gir gaya, ab wo kaise niklega? 🐘", answer: "Geela hokar!", clue: "Physically bahut hi normal tarika hai.", keywords: ["geela", "geela hokar", "wet", "geela hoke"] },
+            { id: 17, category: "riddle", title: "Magic Room", question: "Wo kaun sa room hai jismein na koi khidki hai na darwaza? 🍄", answer: "Mushroom!", clue: "Ise paka kar khaya jata hai.", keywords: ["mushroom", "mashroom", "mush-room"] },
+            { id: 18, category: "funny", title: "Nocturnal Eyes", question: "Wo kya hai jo sote hi gir jata hai aur uthte hi khada ho jata hai? 👀", answer: "Palkein (Eyelids)!", clue: "Aapki pyaari aankhon ka parda.", keywords: ["palkein", "palke", "palkain", "eyelids", "eyelid"] },
+            { id: 19, category: "funny", title: "Ciggy Math", question: "Kaun si cheez hai jise jitna kheecho, utni hi chhoti hoti jati hai? 🚬", answer: "Beedi ya Cigarette!", clue: "Health ke liye haanikarak cheez.", keywords: ["cigarette", "beedi", "bidi", "ciggy", "smoke"] },
+            { id: 20, category: "riddle", title: "Infinite climb", question: "Kaun si cheez hai jo hamesha upar jati hai par kabhi neeche nahi aati? 📈", answer: "Umar (Age)!", clue: "Har janamdin par ye badh jati hai.", keywords: ["umar", "age", "saal", "birthday"] },
+            { id: 21, category: "mind", title: "Kasam Special", question: "Kaun sa khana hum roz khate hain par hamara pet nahi bharta? 🤞", answer: "Kasam (Oath)!", clue: "Log aksar jhoot bolte waqt ise khate hain.", keywords: ["kasam", "promise", "oath", "kasamein"] },
+            { id: 22, category: "funny", title: "Star Sky", question: "Wo kaun sa star hai jo aasmaan mein nahi dikhta? 🌟", answer: "Superstar / Rockstar / Popstar!", clue: "Bollywood ya Hollywood me milte hain ye.", keywords: ["superstar", "rockstar", "actor", "hero", "celebrity"] },
+            { id: 23, category: "funny", title: "Empty Pocket", question: "Aisa kaun sa pocket hai jismein kuch bhi rakho, turant gir jata hai? 👖", answer: "Fata hua pocket (Torn Pocket)!", clue: "Darzi ke paas silwane ki zarurat hai.", keywords: ["fata", "fata hua", "fata pocket", "fata hua pocket", "torn pocket"] },
+            { id: 24, category: "riddle", title: "Step Tracker", question: "Wo kya hai jo peeche chhoot jata hai jab aap aage badhte hain? 👣", answer: "Kadam (Footsteps)!", clue: "Mitti par iske nishan reh jate hain.", keywords: ["kadam", "footsteps", "footstep", "qadam", "nishan"] },
+            { id: 25, category: "mind", title: "Kisan ki bakri", question: "Ek kisan ke paas 17 bakriyan thi. Sab mar gayi siwaye 9 ke. Ab kitni bachi? 🐐", answer: "9 bakriyan!", clue: "Sawal dhyan se padho: 'siwaye 9'!", keywords: ["9", "nau", "nine", "nine goats"] },
+            { id: 26, category: "funny", title: "Non-writing Pen", question: "Kaun sa pen hai jisse hum likh nahi sakte? 🖊️", answer: "Pen-drive / Open / Append!", clue: "Computer me data transfer karne ke kaam aata hai.", keywords: ["pendrive", "pen-drive", "open", "pan"] },
+            { id: 27, category: "riddle", title: "Vampire Sun", question: "Wo kaun si cheez hai jo dhoop mein kabhi nahi sookh sakti? 🥵", answer: "Paseena (Sweat)!", clue: "Garmi me body se nikalta hai.", keywords: ["paseena", "sweat", "pasina"] },
+            { id: 28, category: "funny", title: "Gold Flower", question: "Aisa kaun sa phool hai jismein na rang hai na khushboo? 🌸", answer: "April Fool!", clue: "Pehli April ko doston ko banaya jata hai.", keywords: ["april fool", "april-fool", "fool", "murkh"] },
+            { id: 29, category: "mind", title: "No-money Bank", question: "Aisa kaun sa bank hai jahan paise nahi milte? 🏦", answer: "Blood Bank / Data Bank!", clue: "Yahan khoon daan kiya jata hai.", keywords: ["blood bank", "blood", "khoon", "blood-bank"] },
+            { id: 30, category: "funny", title: "Dreaded Call", question: "Wo kaun sa call hai jo hume sabse zyada pareshaan karta hai? 📞", answer: "Missed Call / Telemarketer call!", clue: "Log gusse mein call-back karte hain.", keywords: ["missed call", "spam", "telemarketer", "miss call", "wrong number"] },
+            { id: 31, category: "riddle", title: "Fruit Mystery", question: "Kaun sa fal hai jo kacha hone par meetha aur pakne par khatta lagta hai? 🍍", answer: "Ananas (Pineapple)!", clue: "Iske sar par taj hota hai aur chubhta hai.", keywords: ["ananas", "pineapple", "pine-apple"] },
+            { id: 32, category: "funny", title: "Runaway", question: "Wo kaun hai jo bina pair ke bhaagta hai aur kabhi wapas nahi aata? ⏱️", answer: "Waqt (Time) / Behta Paani!", clue: "Ghadi isko dikhati hai.", keywords: ["waqt", "samay", "time", "ghadi"] },
+            { id: 33, category: "mind", title: "Fireproof", question: "Aisa kya hai jo aag mein nahi jalta aur paani mein nahi doobta? ❄️", answer: "Baraf (Ice)!", clue: "Garmi me turant pighal jata hai.", keywords: ["baraf", "ice", "barf"] },
+            { id: 34, category: "riddle", title: "Hindi Veggie", question: "Kaun si sabzi mein tala aur chabi dono aate hain? 🔒🗝️", answer: "Lauki (Lock-Key)!", clue: "Hinglish me socho: Lock + Key = ?", keywords: ["lauki", "loky", "bottle gourd", "lowki"] },
+            { id: 35, category: "funny", title: "Underwear Shop", question: "Aisi kaun si dukan hai jahan lene jao toh kapde utarne padte hain? 🛀", answer: "Bathroom / Trail Room / Swimming Pool!", clue: "Ghar me roz subah vahan jate ho.", keywords: ["bathroom", "swimming pool", "trail room", "trial room", "gusal khana"] },
+            { id: 36, category: "riddle", title: "Dreamy Vision", question: "Wo kya hai jo aankhein band karne par hi dikhai deta hai? 💤", answer: "Sapna (Dream) / Andhera!", clue: "Sote waqt dimaag me film chalti hai.", keywords: ["sapna", "dream", "andhera", "dreams", "sapne"] },
+            { id: 37, category: "funny", title: "Jungle King", question: "Kaun sa raaja hai jiske paas na mahal hai na paisa? 🦁", answer: "Jungle ka raja (Sher)!", clue: "Ye dahaadta hai aur shikar karta hai.", keywords: ["sher", "lion", "jungle ka raja", "jungle ka sher"] },
+            { id: 38, category: "funny", title: "No-fish Net", question: "Aisa kaun sa jaal hai jismein koi machli nahi fasti? 🕸️", answer: "Internet / Spider Web!", clue: "Aap abhi isi par baithe hain.", keywords: ["internet", "web", "net", "spider web", "spider-web"] },
+            { id: 39, category: "riddle", title: "Non-flying Kite", question: "Kaun si cheez hai jo hawa mein udti hai par uske par nahi hote? 🎈", answer: "Patang (Kite) / Gubbara!", clue: "Ise dori se bandh kar udaya jata hai Makar Sankranti par.", keywords: ["patang", "kite", "gubbara", "balloon", "gas balloon"] },
+            { id: 40, category: "funny", title: "In-wear Coat", question: "Aisa kaun sa coat hai jise hum pehan nahi sakte? 🧱", answer: "Paint-coat (Deewar ka paint)!", clue: "Gharon ke deewar par lagaya jata hai.", keywords: ["paint", "deewar ka paint", "painting", "paint coat"] },
+            { id: 41, category: "mind", title: "Screaming Clock", question: "Kaun sa alarm hume bina sound ke hi utha deta hai? ☀️", answer: "Suraj ki dhoop / Pet ki bhookh!", clue: "Ye subah subah aasmaan se nikalta hai.", keywords: ["suraj", "dhoop", "sunlight", "bhookh", "bhook"] },
+            { id: 42, category: "funny", title: "Wet Suit", question: "Aisa kaun sa kapda hai jise pehan kar hum naha nahi sakte? 👔", answer: "Sookha kapda / Shadi ka kapda!", clue: "Nahaate waqt saare kapde nikalne padte hain bhai.", keywords: ["sookha kapda", "dry clothes", "sukhay kapde"] },
+            { id: 43, category: "riddle", title: "Zero Value", question: "Aisa kya hai jise aap jitna zyada banate hain, utna bada gaddha hota hai? 🕳️", answer: "Khodna (Digging a hole)!", clue: "Mitti nikalte jao, ye bada hota jayega.", keywords: ["gaddha", "hole", "khodna", "digging"] },
+            { id: 44, category: "funny", title: "Plate Story", question: "Vo kaun si cheez hai jise log khane ke liye khareedte hain par khate nahi? 🍽️", answer: "Chammach ya Plate!", clue: "Ispar khana parosa jata hai.", keywords: ["plate", "chammach", "spoon", "thali", "bartan"] },
+            { id: 45, category: "riddle", title: "Mirror mirror", question: "Wo kya hai jo aapko har roz dekhta hai par sharmata nahi? 🪞", answer: "Aaina (Mirror)!", clue: "Aap apna chehra isme dekhte ho.", keywords: ["aaina", "mirror", "sheesha", "shisha", "darpan"] },
+            { id: 46, category: "funny", title: "Black Face", question: "Wo kaun si cheez hai jo hamesha kali hoti hai, chahe jitna dho lo? 🖤", answer: "Parchhai (Shadow)!", clue: "Dhoop me aapke saath chalti hai.", keywords: ["parchhai", "shadow", "parchayi", "parchai"] },
+            { id: 47, category: "funny", title: "Tailor Math", question: "Aisa kaun sa tarazu hai jo sirf vajan nahi, kapda naapta hai? 📏", answer: "Inchi tape (Measuring tape)!", clue: "Darzi gale me taang kar rakhta hai.", keywords: ["inchitape", "measuring tape", "inch tape", "tape"] },
+            { id: 48, category: "mind", title: "One hand clap", question: "Kaun sa haath hume khana khane me madad nahi karta? 🤚", answer: "Dusra haath (ya deewar ka hath)!", clue: "Common sense lagaie, agar aap ek hi hath se khate hain.", keywords: ["dusra haath", "left hand", "hand", "baaya hath"] },
+            { id: 49, category: "riddle", title: "Flyer", question: "Kaun hai jo paron ke bina udta hai, aur aankhon ke bina rota hai? ☁️", answer: "Badal (Clouds)!", clue: "Sawan me aasmaan me aate hain.", keywords: ["badal", "clouds", "cloud", "megh"] },
+            { id: 50, category: "funny", title: "Eatery", question: "Aisi kaun si table hai jise hum maze se khate hain? 🥦", answer: "Vegetable (Sabhji)!", clue: "Veg khane wale ise roz banate hain.", keywords: ["vegetable", "veg", "sabzi", "sabji"] }
+        ];
+
+        // Custom funny quote list for the Truck Art Section
+        const quotes = [
+            "\"Buri nazar wale tera muh kala, dimaag khali karne wale tera bolbala!\" 🚚",
+            "\"Dimaag chalana sehat ke liye achha hai, par zyada chalaoge to dahi ban jayega!\" 🧠",
+            "\"Badam khane se akal nahi aati, thokar khane se aati hai... par har baar thokar mat khana!\" 🤕",
+            "\"Hansna jaroori hai dosto, warna zindagi tum par hans degi!\" 😂",
+            "\"Sawal sidhe ho sakte hain, par dimaag hamesha crooked hona chahiye!\" 🤪"
+        ];
+
+        // --- GAME VARIABLES ---
+        let currentIdx = 0;
+        let solvedQuestions = new Set(); // Track solved Qs (answered correctly)
+        let unlockedAnswers = new Set(); // Track Qs where user directly viewed answer
+        let filteredData = [...qaData];
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderQuestion();
+            buildQuestionList();
+            updateStats();
+            
+            // Allow enter key to check answer
+            document.getElementById('userAns').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkUserAnswer();
+                }
+            });
+        });
+
+        // --- RENDER CURRENT QUESTION ---
+        function renderQuestion() {
+            const currentQ = filteredData[currentIdx];
+            
+            // Set UI elements
+            document.getElementById('qCategory').innerText = `${getCategoryEmoji(currentQ.category)} ${currentQ.category.toUpperCase()}`;
+            document.getElementById('qText').innerText = currentQ.question;
+            document.getElementById('helperClue').innerHTML = `💡 <strong>Hint:</strong> ${currentQ.clue}`;
+            
+            // Stats & pagination updates
+            document.getElementById('statNumber').innerText = `${currentQ.id} / 50`;
+            document.getElementById('currentPagination').innerText = currentQ.id;
+
+            // Reset Input field
+            const inputField = document.getElementById('userAns');
+            inputField.value = '';
+            inputField.placeholder = "Apna crazy dimag lagayein...";
+
+            // Reset and hide feedback box
+            const feedbackBox = document.getElementById('feedbackBox');
+            feedbackBox.classList.add('hidden');
+            feedbackBox.className = "mt-6 border-3 border-slate-900 rounded-2xl p-5 hidden transform transition-all duration-200";
+
+            // Highlight currently active list item in sidebar
+            document.querySelectorAll('.scroll-item').forEach(el => {
+                el.classList.remove('bg-yellow-400', 'text-slate-900');
+                el.classList.add('bg-slate-800', 'text-white');
+            });
+            const activeItem = document.getElementById(`scrollItem-${currentQ.id}`);
+            if (activeItem) {
+                activeItem.classList.remove('bg-slate-800', 'text-white');
+                activeItem.classList.add('bg-yellow-400', 'text-slate-900');
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // --- BUILD SIDEBAR SCROLL LIST ---
+        function buildQuestionList() {
+            const listContainer = document.getElementById('questionsScrollList');
+            listContainer.innerHTML = '';
+
+            filteredData.forEach((q, index) => {
+                const item = document.createElement('div');
+                item.id = `scrollItem-${q.id}`;
+                item.className = `scroll-item cursor-pointer p-3 rounded-xl border border-slate-700 bg-slate-800 text-white flex items-center justify-between text-sm transition-all duration-150 hover:bg-slate-700`;
+                
+                // Solve / Status marker
+                let marker = `<span class="text-xs text-slate-400">#${q.id}</span>`;
+                if (solvedQuestions.has(q.id)) {
+                    marker = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Resolved</span>`;
+                } else if (unlockedAnswers.has(q.id)) {
+                    marker = `<span class="text-blue-400 font-bold"><i class="fa-solid fa-eye"></i> Unlocked</span>`;
+                }
+
+                item.innerHTML = `
+                    <div class="flex-1 pr-2">
+                        <p class="font-bold line-clamp-1">${q.question}</p>
+                    </div>
+                    <div>${marker}</div>
+                `;
+
+                // Jump directly to that filtered index
+                item.onclick = () => {
+                    playSynthSound('boing');
+                    currentIdx = index;
+                    renderQuestion();
+                };
+
+                listContainer.appendChild(item);
+            });
+        }
+
+        // --- STATS UPDATE ---
+        function updateStats() {
+            document.getElementById('statSolved').innerText = solvedQuestions.size;
+            document.getElementById('statUnlocked').innerText = unlockedAnswers.size;
+        }
+
+        // --- CHECK USER ANSWER ---
+        function checkUserAnswer() {
+            const userText = document.getElementById('userAns').value.trim().toLowerCase();
+            const currentQ = filteredData[currentIdx];
+
+            if (!userText) {
+                triggerCardShake();
+                playSynthSound('fail');
+                showImmediateFeedback(false, "⚠️ Khali mat chhodo!", "Kuch na kuch tedha likh hi do, chahe jitna bakwas ho!");
+                return;
+            }
+
+            // Keyword matching logic (Hinglish/Hindi flexibility)
+            let isMatch = false;
+            for (let word of currentQ.keywords) {
+                if (userText.includes(word)) {
+                    isMatch = true;
+                    break;
+                }
+            }
+
+            if (isMatch) {
+                // SUCCESS MATCH!
+                solvedQuestions.add(currentQ.id);
+                updateStats();
+                buildQuestionList();
+                playSynthSound('success');
+                triggerConfetti();
+
+                showImmediateFeedback(true, "🎉 Kya Baat Hai! Sahi Pakde!", `Aapka dimaag toh sach mein ultra-pro-max tedha hai!`, currentQ.answer);
+            } else {
+                // FAIL / "Too straight" answer
+                triggerCardShake();
+                playSynthSound('fail');
+                showImmediateFeedback(false, "❌ Arre Re! Yeh Toh Seedha Jawab Hai!", "Aapka jawab kaafi simple/seedha hai. Hamare 'Tedhe' jawab ke bilkul paas nahi! Dobara try kijiye ya direct dekh lijiye.");
+            }
+        }
+
+        // --- REVEAL ANSWER DIRECTLY ---
+        function revealAnswerDirectly() {
+            const currentQ = filteredData[currentIdx];
+            unlockedAnswers.add(currentQ.id);
+            updateStats();
+            buildQuestionList();
+            playSynthSound('success');
+            
+            showImmediateFeedback(true, "🔍 Jawab Haazir Hai!", "Kuch sawal bina dimaag lagaye hi ache lagte hain! Dekhiye iska crazy jawab niche:", currentQ.answer);
+        }
+
+        // --- SHOW FEEDBACK IN INNER COMPONENT ---
+        function showImmediateFeedback(isSuccess, title, text, actualAnswer = null) {
+            const fbBox = document.getElementById('feedbackBox');
+            const fbEmoji = document.getElementById('feedbackEmoji');
+            const fbTitle = document.getElementById('feedbackTitle');
+            const fbText = document.getElementById('feedbackText');
+            const actualAnsBox = document.getElementById('actualAnswer');
+
+            fbBox.classList.remove('hidden');
+            
+            if (isSuccess) {
+                fbBox.className = "mt-6 border-3 border-emerald-500 bg-emerald-50/50 rounded-2xl p-5 transform transition-all duration-200 animate-bounce-once";
+                fbEmoji.innerText = "🤪";
+                fbTitle.className = "text-xl font-black text-emerald-800";
+                fbTitle.innerText = title;
+                fbText.innerText = text;
+                actualAnsBox.innerText = actualAnswer;
+                actualAnsBox.parentElement.classList.remove('hidden');
+            } else {
+                fbBox.className = "mt-6 border-3 border-rose-500 bg-rose-50/50 rounded-2xl p-5 transform transition-all duration-200";
+                fbEmoji.innerText = "🤦‍♂️";
+                fbTitle.className = "text-xl font-black text-rose-800";
+                fbTitle.innerText = title;
+                fbText.innerText = text;
+                actualAnsBox.parentElement.classList.add('hidden');
+            }
+        }
+
+        // --- ANIMATIONS: CARD SHAKE ON FAILURE ---
+        function triggerCardShake() {
+            const card = document.getElementById('gameCard');
+            card.classList.add('shake-element');
+            setTimeout(() => {
+                card.classList.remove('shake-element');
+            }, 500);
+        }
+
+        // --- ANIMATIONS: CONFETTI POPPERS ---
+        function triggerConfetti() {
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#f43f5e', '#a855f7'];
+            for (let i = 0; i < 40; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'confetti-particle';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // Fall animation custom physics
+                const duration = 1 + Math.random() * 2;
+                particle.style.animation = `fall ${duration}s linear forwards`;
+                
+                document.body.appendChild(particle);
+
+                // Remove after animation completes
+                setTimeout(() => {
+                    particle.remove();
+                }, duration * 1000);
+            }
+        }
+
+        // --- FILTER QUESTIONS BY CATEGORY ---
+        function filterQuestions(category) {
+            playSynthSound('boing');
+            
+            // Adjust button styling
+            document.querySelectorAll('.category-filter').forEach(el => {
+                el.classList.remove('bg-yellow-400', 'text-slate-900');
+                el.classList.add('bg-slate-800', 'text-slate-300');
+            });
+            event.target.classList.remove('bg-slate-800', 'text-slate-300');
+            event.target.classList.add('bg-yellow-400', 'text-slate-900');
+
+            if (category === 'all') {
+                filteredData = [...qaData];
+            } else {
+                filteredData = qaData.filter(q => q.category === category);
+            }
+
+            currentIdx = 0;
+            renderQuestion();
+            buildQuestionList();
+        }
+
+        // --- HELPERS ---
+        function getCategoryEmoji(cat) {
+            switch(cat) {
+                case 'funny': return '😜';
+                case 'mind': return '🧠';
+                case 'riddle': return '🧩';
+                default: return '🔥';
+            }
+        }
+
+        // Navigation
+        function nextQuestion() {
+            if (currentIdx < filteredData.length - 1) {
+                playSynthSound('boing');
+                currentIdx++;
+                renderQuestion();
+            } else {
+                alert("Wah re ustaad! Aapne is category ke saare sawal dekh liye!");
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                playSynthSound('boing');
+                currentIdx--;
+                renderQuestion();
+            }
+        }
+
+        function triggerRandomQuestion() {
+            playSynthSound('boing');
+            const randomIdx = Math.floor(Math.random() * filteredData.length);
+            currentIdx = randomIdx;
+            renderQuestion();
+        }
+
+        // Truck art quote swapper
+        function changeQuote() {
+            playSynthSound('boing');
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('truckQuote').innerText = randomQuote;
+        }
+
+        // Easy sharing simulated link
+        function shareGame() {
+            playSynthSound('success');
+            const funnyQuote = document.getElementById('qText').innerText;
+            const message = `Arey, iska Tedha Jawab batao: "${funnyQuote}" 😂\nKhelne ke liye yahan aao: ${window.location.href}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(message).then(() => {
+                    alert("📋 Mast message copy ho gaya hai! WhatsApp ya Telegram par dosto ko bhejein!");
+                });
+            } else {
+                alert("Game is ready to share with friends! Copy the browser URL and send!");
+            }
+        }
+    </script>
+</body>
+</html>
