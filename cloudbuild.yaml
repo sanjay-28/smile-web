@@ -1,37 +1,64 @@
 steps:
-  # Step 1: Build the container image using the Dockerfile
+  # Step 1: Check and create the Artifact Registry repo dynamically
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud artifacts repositories describe ${_REPOSITORY} --location=${_LOCATION} > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+          echo "Repository ${_REPOSITORY} not found. Creating it in ${_LOCATION}..."
+          gcloud artifacts repositories create ${_REPOSITORY} \
+            --repository-format=docker \
+            --location=${_LOCATION} \
+            --description="Docker repository for Seedhe Sawal Tedhe Javab app"
+        else
+          echo "Repository ${_REPOSITORY} already exists."
+        fi
+
+  # Step 2: Build the container image using the Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
-      '-t', '${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+      '-t', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+      '-f', 'dockerfile.dockerfile',
       '.'
     ]
 
-  # Step 2: Push the container image to GCP Artifact Registry
+  # Step 3: Push the container image to GCP Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'push', 
-      '${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
     ]
 
-  # Step 3: Deploy the image directly to Google Cloud Run
+  # Step 4: Deploy the image to Cloud Run using custom service account execution identity
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
       - '${_SERVICE_NAME}'
-      - '--image=${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      - '--image=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
       - '--region=${_LOCATION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
+      - '--vpc-connector=${_VPC_CONNECTOR}'
+      - '--vpc-egress=private-ranges-only'
+      - '--service-account=cicd-124@cicd-tutorial-497406.iam.gserviceaccount.com'
 
-# User-defined substitutions for easier customizations
+# Global substitutions
 substitutions:
-  _LOCATION: 'asia-south1'                  # Replace with your preferred GCP region
-  _REPOSITORY: 'smile-web-repo'            # Replace with your Artifact Registry repository name
-  _IMAGE_NAME: 'smile-web'                 # Docker image name
-  _SERVICE_NAME: 'smile-web-service'       # Name of the Cloud Run service
+  _LOCATION: 'asia-south1'                         # Mumbai Region
+  _REPOSITORY: 'smile-web-repo'                   
+  _IMAGE_NAME: 'smile-web'                        
+  _SERVICE_NAME: 'smile-web-service'              
+  _VPC_CONNECTOR: 'cloud-run-to-mysql-server'     
+
+# Enforce custom pipeline execution identity
+options:
+  requestedVerifyOption: VERIFIED
+  logging: CLOUD_LOGGING_ONLY
 
 images:
   - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
