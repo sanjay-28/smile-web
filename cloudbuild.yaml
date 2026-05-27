@@ -1,0 +1,37 @@
+steps:
+  # Step 1: Build the container image using the Dockerfile
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', 
+      '-t', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+      '.'
+    ]
+
+  # Step 2: Push the container image to GCP Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 
+      '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+    ]
+
+  # Step 3: Deploy the image directly to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      - '--region=${_LOCATION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+
+# User-defined substitutions for easier customizations
+substitutions:
+  _LOCATION: 'us-central1'                  # Replace with your preferred GCP region
+  _REPOSITORY: 'smile-web-repo'            # Replace with your Artifact Registry repository name
+  _IMAGE_NAME: 'smile-web'                 # Docker image name
+  _SERVICE_NAME: 'smile-web-service'       # Name of the Cloud Run service
+
+images:
+  - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
