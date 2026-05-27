@@ -1,5 +1,5 @@
 steps:
-  # Step 1: Build the container image using the Dockerfile
+  # Step 0: Build the container image using the Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
@@ -8,14 +8,14 @@ steps:
       '.'
     ]
 
-  # Step 2: Push the container image to GCP Artifact Registry
+  # Step 1: Push the container image to GCP Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'push', 
       '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
     ]
 
-  # Step 3: Deploy the image to Cloud Run using custom service account execution identity
+  # Step 2: Deploy the image to Cloud Run using custom service account execution identity
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
