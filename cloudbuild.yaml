@@ -1,10 +1,10 @@
 steps:
-  # Step 0: Build the container image using the Dockerfile
+  # Step 0: Build the container image using the correct Dockerfile case name
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
       '-t', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
-      '-f', 'dockerfile.dockerfile',
+      '-f', 'Dockerfile',
       '.'
     ]
 
@@ -15,7 +15,7 @@ steps:
       '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
     ]
 
-  # Step 2: Deploy the image to Cloud Run using custom service account execution identity
+  # Step 2: Deploy the image to Cloud Run in Mumbai with the custom Service Account
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
