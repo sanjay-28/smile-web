@@ -3,7 +3,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
-      '-t', '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
+      '-t', '${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}', 
       '.'
     ]
 
@@ -11,7 +11,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'push', 
-      '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      '${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
     ]
 
   # Step 3: Deploy the image directly to Google Cloud Run
@@ -21,7 +21,7 @@ steps:
       - 'run'
       - 'deploy'
       - '${_SERVICE_NAME}'
-      - '--image=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+      - '--image=${_LOCATION}-docker.pkg.dev/${cicd-tutorial-497406}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
       - '--region=${_LOCATION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
