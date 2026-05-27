@@ -28,7 +28,7 @@ steps:
 
 # User-defined substitutions for easier customizations
 substitutions:
-  _LOCATION: 'us-central1'                  # Replace with your preferred GCP region
+  _LOCATION: 'asia-south1'                  # Replace with your preferred GCP region
   _REPOSITORY: 'smile-web-repo'            # Replace with your Artifact Registry repository name
   _IMAGE_NAME: 'smile-web'                 # Docker image name
   _SERVICE_NAME: 'smile-web-service'       # Name of the Cloud Run service
