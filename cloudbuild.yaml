@@ -1,22 +1,5 @@
 steps:
-  # Step 1: Check and create the Artifact Registry repo dynamically
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        gcloud artifacts repositories describe ${_REPOSITORY} --location=${_LOCATION} > /dev/null 2>&1
-        if [ $? -ne 0 ]; then
-          echo "Repository ${_REPOSITORY} not found. Creating it in ${_LOCATION}..."
-          gcloud artifacts repositories create ${_REPOSITORY} \
-            --repository-format=docker \
-            --location=${_LOCATION} \
-            --description="Docker repository for Seedhe Sawal Tedhe Javab app"
-        else
-          echo "Repository ${_REPOSITORY} already exists."
-        fi
-
-  # Step 2: Build the container image using the Dockerfile
+  # Step 1: Build the container image using the Dockerfile
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', 
@@ -25,14 +8,14 @@ steps:
       '.'
     ]
 
-  # Step 3: Push the container image to GCP Artifact Registry
+  # Step 2: Push the container image to GCP Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'push', 
       '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
     ]
 
-  # Step 4: Deploy the image to Cloud Run using custom service account execution identity
+  # Step 3: Deploy the image to Cloud Run using custom service account execution identity
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -47,15 +30,13 @@ steps:
       - '--vpc-egress=private-ranges-only'
       - '--service-account=cicd-124@cicd-tutorial-497406.iam.gserviceaccount.com'
 
-# Global substitutions
 substitutions:
-  _LOCATION: 'asia-south1'                         # Mumbai Region
+  _LOCATION: 'asia-south1'
   _REPOSITORY: 'smile-web-repo'                   
   _IMAGE_NAME: 'smile-web'                        
   _SERVICE_NAME: 'smile-web-service'              
   _VPC_CONNECTOR: 'cloud-run-to-mysql-server'     
 
-# Enforce custom pipeline execution identity
 options:
   requestedVerifyOption: VERIFIED
   logging: CLOUD_LOGGING_ONLY
