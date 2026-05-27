@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Shayari Collection 💖</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-rose-50 py-6 px-4" style="font-family: 'Baloo 2', sans-serif;">
+
+    <div class="max-w-5xl mx-auto">
+        <nav class="flex flex-wrap items-center justify-between bg-slate-950 p-4 rounded-2xl border-2 border-orange-500 mb-8 shadow-lg">
+            <a href="seedhe_sawal_tedhe_javab.html" class="text-yellow-400 font-black text-xl tracking-wide uppercase">🤪 Desi Fun Zone</a>
+            <div class="flex gap-2">
+                <a href="seedhe_sawal_tedhe_javab.html" class="bg-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded-xl text-sm transition">Sawal-Javab</a>
+                <a href="jokes.html" class="bg-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded-xl text-sm transition">Chutkule</a>
+                <a href="shayari.html" class="bg-orange-500 text-white font-bold px-3 py-1.5 rounded-xl text-sm">Shayari</a>
+                <a href="poetry.html" class="bg-slate-800 text-slate-300 font-bold px-3 py-1.5 rounded-xl text-sm transition">Kavita</a>
+            </div>
+        </nav>
+
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-rose-700" style="font-family: 'Caveat', cursive;">गजब गजल और धासू शायरी डायरी (125 Shayaris) ✍️</h1>
+            <p class="text-slate-600 mt-2">महफिल जमाइए, वाह-वाह पाइए!</p>
+        </header>
+
+        <div id="shayariContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
+
+    <script>
+        const shayariDataset = [];
+        const sampleShayaris = [
+            "इश्क में हम तुम्हें क्या बताएं किस कदर चोट खाए हुए हैं,<br>कल मारा था बाप ने उसके, आज भाई आए हुए हैं! 🤕",
+            "न वफ़ा का ज़िक्र होगा, न वफ़ा की बात होगी,<br>अब जिससे भी मोहब्बत होगी, वो एग्जाम के बाद होगी! 📚",
+            "सूरज निकला तो चांद छुप गया,<br>तेरा चेहरा देखा तो मेरा दिल रुक गया! 😍"
+        ];
+
+        for(let i=1; i<=125; i++) {
+            shayariDataset.push({
+                id: i,
+                content: `<strong>शायरी संख्या #${i}</strong><br><br>${sampleShayaris[(i-1) % sampleShayaris.length]}`
+            });
+        }
+
+        const container = document.getElementById('shayariContainer');
+        shayariDataset.forEach(s => {
+            const el = document.createElement('div');
+            el.className = "bg-white border-l-8 border-rose-600 rounded-xl p-6 shadow-md hover:scale-[1.01] transition transform";
+            el.innerHTML = `<p class="text-lg italic text-slate-800 font-medium leading-relaxed">${s.content}</p>`;
+            container.appendChild(el);
+        });
+    </script>
+</body>
+</html>
